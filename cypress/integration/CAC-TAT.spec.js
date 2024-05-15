@@ -1,6 +1,8 @@
 /// <reference types="Cypress" />
 
 describe('Central de Atendimento ao cliente TAT', () => {
+  const ThreeSecondsInMS = 3000
+
   beforeEach(() => {
     cy.visit('./src/index.html');
   })
@@ -11,6 +13,9 @@ describe('Central de Atendimento ao cliente TAT', () => {
 
   it('Preenchendo os campos obrigatórios e enviar o formulário', () => {
     const longText = 'What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing and typesetting industry. '
+
+    cy.clock() //congela o relógio do navegador
+
     cy.get('#firstName').type('Fernanda')
 
     cy.get('#lastName').type('Moreira')
@@ -22,9 +27,16 @@ describe('Central de Atendimento ao cliente TAT', () => {
     cy.contains('button', 'Enviar').click()
 
     cy.get('.success').should('be.visible')
+
+    cy.tick(ThreeSecondsInMS) //avança o relógio três segundo (milisegundos). Avanço  este tempo para não perdê-lo esperando
+
+    cy.get('.success').should('not.be.visible')
   })
 
   it('Exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', () => {
+
+    cy.clock()
+
     cy.get('#firstName').type('Fernanda')
 
     cy.get('#lastName').type('Moreira')
@@ -36,6 +48,10 @@ describe('Central de Atendimento ao cliente TAT', () => {
     cy.contains('button', 'Enviar').click()
 
     cy.get('.error').should('be.visible')
+
+    cy.tick(ThreeSecondsInMS) //avança o relógio três segundo (milisegundos). Avanço  este tempo para não perdê-lo esperando
+
+    cy.get('.error').should('not.be.visible')
   })
 
   it('Verifica se ao inserir um valor não numerico no campo telefone se ele permanecer vazio', () => {
@@ -46,22 +62,24 @@ describe('Central de Atendimento ao cliente TAT', () => {
 
   it('Exibe mensagem de erro quando o telefone se torna obrigatório, mas não é preenchido antes do envio do formulário', () => {
 
+    cy.clock()
     cy.get('#firstName').type('Fernanda')
 
     cy.get('#lastName').type('Moreira')
 
     cy.get('#email').type('fernanda.moreira@gmail.com')
 
-    cy.get('#phone-checkbox')
-      .check()
+    cy.get('#phone-checkbox').check()
 
     cy.get('#open-text-area').type('teste', { delay: 0 })
 
-    cy.contains('button', 'Enviar')
-      .click()
+    cy.contains('button', 'Enviar').click()
 
-    cy.get('.error')
-      .should('be.visible')
+    cy.get('.error').should('be.visible')
+
+    cy.tick(ThreeSecondsInMS) //avança o relógio três segundo (milisegundos). Avanço  este tempo para não perdê-lo esperando
+
+    cy.get('.error').should('not.be.visible')
   })
 
 
@@ -93,16 +111,28 @@ describe('Central de Atendimento ao cliente TAT', () => {
   })
 
   it('Exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', () => {
-    cy.contains('button', 'Enviar')
-      .click()
 
-    cy.get('.error')
-      .should('be.visible')
+    cy.clock()
+
+    cy.contains('button', 'Enviar').click()
+
+    cy.get('.error').should('be.visible')
+
+    cy.tick(ThreeSecondsInMS) //avança o relógio três segundo (milisegundos). Avanço  este tempo para não perdê-lo esperando
+
+    cy.get('.error').should('not.be.visible')
   })
 
   it('Envia formulario com sucesso utilizando comandos customizados', () => {
+    cy.clock()
+
     cy.fillMandatoryFieldsAnsSubmit()
+
     cy.get('.success').should('be.visible')
+
+    cy.tick(ThreeSecondsInMS) //avança o relógio três segundo (milisegundos). Avanço  este tempo para não perdê-lo esperando
+
+    cy.get('.success').should('not.be.visible')
   })
 
   it('seleciona um produto (YouTube) por seu texto', () => {
@@ -187,4 +217,5 @@ describe('Central de Atendimento ao cliente TAT', () => {
 
     cy.contains('Não salvamos dados').should('be.visible')
   })
+
 })
